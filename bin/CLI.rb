@@ -29,6 +29,7 @@ class CLI
 
   def self.print_json
     puts @json_spells["count"]
+    puts @json_spells
   end
 
 end
