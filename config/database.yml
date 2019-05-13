@@ -1,0 +1,7 @@
+development:
+  adapter: postgresql
+  database: development-dnd-api-searcher
+
+production:
+  adapter: postgresql
+  database: production-dnd-api-searcher

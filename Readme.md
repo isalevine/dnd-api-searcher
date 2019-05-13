@@ -7,6 +7,4 @@
 * NOTE: when designing (backstory) snippets, make sure to give them an array that stores searchable tags of some kind, like class-names and race-names and etc...
 
 ## Current next steps:
-* use @json_spells["count"] to iterate through spells and search
-for all level 1 spells => and build it to get ANY level spells...
-* for practice, consider building in a sql database to save a lot of the data to, then run queries on that?
+* use sql to query cloned spells database for level -1/0/1 spells => OUTPUT TO TEXT FILE??
