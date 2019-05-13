@@ -50,10 +50,10 @@ class CLI
       # puts "input == 2"
       # exit
     elsif input == "0"
-      "Goodbye! <3"
+      puts "Goodbye! <3"
       exit
     else
-      "Invalid entry. Returning to main menu."
+      puts "Invalid entry. Returning to main menu."
       self.main_menu
     end
 
