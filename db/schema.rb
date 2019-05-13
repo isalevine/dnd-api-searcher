@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 1) do
+ActiveRecord::Schema.define(version: 4) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "features", id: :serial, force: :cascade do |t|
+    t.string "api_id"
+    t.integer "api_index"
+    t.string "name"
+    t.text "desc", default: [], array: true
+    t.integer "level"
+    t.text "classes", default: [], array: true
+  end
 
   create_table "spells", id: :serial, force: :cascade do |t|
     t.string "api_id"

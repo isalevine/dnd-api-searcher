@@ -7,7 +7,10 @@ class CLI
   # attr_accessor
 
   def self.run
+    # MOVE get_json CALLS TO A NEW METHOD -- DO NOT
+    # CALL DURING self.run (SLOWS EVERYTHING DOWN!!)
     @json_spells = get_json(API_URL + "/spells")
+    @json_features = get_json(API_URL + "/features")
     self.welcome_message
   end
 
@@ -20,7 +23,7 @@ class CLI
     Right now it is in test mode.
     Currently searching for:
 
-    spells
+    features
 
     (press enter to continue)
 
@@ -36,7 +39,8 @@ class CLI
     ======================================
 
     1. Clone data from Dnd 5th Edition API
-    2. Search local database
+    2. Search local database for Spells (by level)
+    3. Search local database for Features (by level)
 
     0. Exit
 
@@ -45,9 +49,13 @@ class CLI
     input = STDIN.gets.chomp
 
     if input == "1"
-      self.clone_spells
+      # self.clone_spells
+      self.clone_features
     elsif input == "2"
       self.query_spells_by_level
+    elsif input == "3"
+      self.query_features_by_level
+
     elsif input == "0"
       puts "Goodbye! <3"
       exit
@@ -59,18 +67,20 @@ class CLI
   end
 
 
-  # option 1 - clone (spells)
-  def self.clone_spells
-    puts "Press enter to clone all spells (!!temporarily disabled!!), or 'q' to return to main menu."
+
+
+  # option 1 - clone (features) - DISABLED!!
+  def self.clone_features
+    puts "Press enter to clone all features, or 'q' to return to main menu."
     input = STDIN.gets.chomp
     if input == "q"
       self.main_menu
     else
-      self.print_json
+      self.print_json_spells
     end
   end
 
-  def self.print_json
+  def self.print_json_spells
     puts @json_spells["count"]
     puts @json_spells
     self.save_spells_to_db
@@ -95,6 +105,42 @@ class CLI
 
     end
   end
+
+  # option 1 - clone (features) - DISABLED!!
+  def self.clone_features
+    puts "Press enter to clone all features, or 'q' to return to main menu."
+    input = STDIN.gets.chomp
+    if input == "q"
+      self.main_menu
+    else
+      self.print_json_features
+    end
+  end
+
+  def self.print_json_features
+    puts @json_features["count"]
+    puts @json_features
+    self.save_features_to_db
+  end
+
+  def self.save_features_to_db
+    @feature_count = @json_features["results"].count
+    @feature_count.times do
+      feature = get_json(API_URL + "/features/" + @feature_count.to_s)
+      puts feature
+
+      classes = []
+      classes << feature["class"]["name"]
+
+      # CLONE DISABLED - 414 features in local database
+      # Feature.create(api_id: feature["_id"], api_index: feature["index"], name: feature["name"], desc: feature["desc"], level: feature["level"], classes: classes )
+
+      @feature_count -= 1
+
+    end
+  end
+
+
 
   # option 2 - search database (spells)
   def self.query_spells_by_level
@@ -134,5 +180,46 @@ class CLI
     output.close
     exit
   end
+
+  # option 3 - search database (features)
+  def self.query_features_by_level
+    puts "Input feature level minimum:"
+    min = STDIN.gets.to_i
+    puts "Input feature level maximum (or press enter to search minimum only):"
+    max = STDIN.gets.chomp
+
+    if max == ""
+      max = min
+    else
+      max.to_i!
+    end
+
+
+    if min > max
+      new_max = min
+      min = max
+      max = new_max
+    end
+
+    features = Feature.order("name").where("level >= #{min} AND level <= #{max}")
+    self.export_feature_text(features, min, max)
+  end
+
+  def self.export_feature_text(features, *args)
+    output = File.open("app/output/features.yml", "w")
+    output << "Output for Features, level #{args[0]} to #{args[1]}: \n \n"
+    features.each do |feature|
+      output << "Feature name: " + feature.name + "\n"
+      output << "Feature level: " + feature.level.to_s + "\n"
+      feature.desc.each do |text|
+        output << text + "\n"
+      end
+      output << "\n \n \n"
+    end
+    output.close
+    exit
+  end
+
+
 
 end
