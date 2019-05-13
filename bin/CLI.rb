@@ -47,8 +47,7 @@ class CLI
     if input == "1"
       self.clone_spells
     elsif input == "2"
-      # puts "input == 2"
-      # exit
+      self.query_spells_by_level
     elsif input == "0"
       puts "Goodbye! <3"
       exit
@@ -59,6 +58,8 @@ class CLI
 
   end
 
+
+  # option 1 - clone (spells)
   def self.clone_spells
     puts "Press enter to clone all spells (!!temporarily disabled!!), or 'q' to return to main menu."
     input = STDIN.gets.chomp
@@ -93,6 +94,43 @@ class CLI
       @spell_count -= 1
 
     end
+  end
+
+  # option 2 - search database (spells)
+  def self.query_spells_by_level
+    # binding.pry
+
+    puts "Input spell level minimum:"
+    min = STDIN.gets.to_i
+    puts "Input spell level maximum (or press enter to search minimum only):"
+    max = STDIN.gets.chomp
+
+    if max == ""
+      max = min
+    else
+      max.to_i!
+    end
+
+
+    if min > max
+      new_max = min
+      min = max
+      max = new_max
+    end
+
+    spells = Spell.where("level >= #{min} AND level <= #{max}")
+    # binding.pry
+    self.export_spell_text(spells)
+  end
+
+  def self.export_spell_text(spells)
+    output = File.open("spells.yml", "w")
+    spells.each do |spell|
+      # binding.pry
+      output << spell
+    end
+    output.close
+    exit
   end
 
 end
