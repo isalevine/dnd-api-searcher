@@ -117,17 +117,17 @@ class CLI
     end
 
     spells = Spell.where("level >= #{min} AND level <= #{max}")
-    self.export_spell_text(spells)
+    self.export_spell_text(spells, min, max)
   end
 
-  def self.export_spell_text(spells)
-    output = File.open("spell.yml", "w")
+  def self.export_spell_text(spells, *args)
+    output = File.open("app/output/spells.yml", "w")
+    output << "Output for Spells, level #{args[0]} to #{args[1]}: \n \n"
     spells.each do |spell|
-      output << "Spell name: " + spell.name
-      output << "\n"
+      output << "Spell name: " + spell.name + "\n"
+      output << "Spell level: " + spell.level.to_s + "\n"
       spell.desc.each do |text|
-        output << text
-        output << "\n"
+        output << text + "\n"
       end
       output << "\n \n \n"
     end
