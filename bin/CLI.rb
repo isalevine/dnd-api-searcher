@@ -116,7 +116,7 @@ class CLI
       max = new_max
     end
 
-    spells = Spell.where("level >= #{min} AND level <= #{max}")
+    spells = Spell.order("name").where("level >= #{min} AND level <= #{max}")
     self.export_spell_text(spells, min, max)
   end
 
