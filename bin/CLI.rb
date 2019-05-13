@@ -98,8 +98,6 @@ class CLI
 
   # option 2 - search database (spells)
   def self.query_spells_by_level
-    # binding.pry
-
     puts "Input spell level minimum:"
     min = STDIN.gets.to_i
     puts "Input spell level maximum (or press enter to search minimum only):"
@@ -119,15 +117,19 @@ class CLI
     end
 
     spells = Spell.where("level >= #{min} AND level <= #{max}")
-    # binding.pry
     self.export_spell_text(spells)
   end
 
   def self.export_spell_text(spells)
-    output = File.open("spells.yml", "w")
+    output = File.open("spell.yml", "w")
     spells.each do |spell|
-      # binding.pry
-      output << spell
+      output << "Spell name: " + spell.name
+      output << "\n"
+      spell.desc.each do |text|
+        output << text
+        output << "\n"
+      end
+      output << "\n \n \n"
     end
     output.close
     exit
